@@ -28,14 +28,16 @@ namespace AdminAndInstructor.Microservice.Controllers
 
         // POST api/<AdminController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public object Post([FromBody] string value)
         {
+            return Ok("Course added");
         }
 
         // PUT api/<AdminController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public object Put(int id, [FromBody] string value)
         {
+            return Ok("Course updated , "+ id.ToString());
         }
 
         // DELETE api/<AdminController>/5

@@ -21,6 +21,17 @@ namespace Gateway.Api
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                }).ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config
+                    .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
+                    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
                 });
+            //.ConfigureAppConfiguration((hostingContext,config) =>
+            //    {
+            //        config.SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
+            //        // aads new json file so that asp.netcore3.1 application can read seetings from these files
+            //        .AddJsonFile("ocelot1.json", optional: false, reloadOnChange: true);
+            //    });
     }
 }

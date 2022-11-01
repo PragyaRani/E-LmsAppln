@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ApiCommonLibrary;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using User.Microservice.Models;
-
+using User.Microservice.DTO;
+using User.Microservice.Repository;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace User.Microservice.Controllers
@@ -13,6 +14,11 @@ namespace User.Microservice.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        IUserRepo userRepo;
+        public UserController(IUserRepo _userRepo)
+        {
+            userRepo = _userRepo;
+        }
         // GET: api/<UserController>
         //[HttpGet]
         //public IEnumerable<string> Get()
@@ -28,13 +34,16 @@ namespace User.Microservice.Controllers
         //}
 
         // POST api/<UserController>
-        [HttpPost("signIn")]
-        public object Post([FromBody] UserSignIn user)
+        [HttpPost("register")]
+        public async Task<ActionResult<ServiceResponse<object>>> Post([FromBody] AddUserDto user)
         {
-            return Ok("User logged successfully");
+            var response = await userRepo.Register(user);
+            if(response.Success)
+                return Ok(response);
+            return BadRequest(response);
         }
-        [HttpPost("signUn")]
-        public object Register([FromBody] UserSignUp user)
+        [HttpPost("login")]
+        public object Register([FromBody] SignInDto user)
         {
             return Ok("User resgistered successfully");
         }

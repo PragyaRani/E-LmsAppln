@@ -6,7 +6,7 @@ namespace User.Microservice.Repository
 {
     public interface IUserRepo
     {
-        public Task<ServiceResponse<dynamic>> Register(AddUserDto addUserDto);
+        public Task<ServiceResponse<dynamic>> Register(AddUserDto[] addUserDto);
         public Task<bool> IsEmailExist(string email);
     }
 }

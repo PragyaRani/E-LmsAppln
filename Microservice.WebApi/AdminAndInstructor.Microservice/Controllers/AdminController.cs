@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AdminAndInstructor.Microservice.Dto;
+using AdminAndInstructor.Microservice.Repository;
+using ApiCommonLibrary;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +15,11 @@ namespace AdminAndInstructor.Microservice.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
+        public ICourseRepo courseRepo;
+        public AdminController(ICourseRepo _courseRepo)
+        {
+            courseRepo = _courseRepo;
+        }
         // GET: api/<AdminController>
         [HttpGet]
         public IEnumerable<string> Get()
@@ -28,9 +36,12 @@ namespace AdminAndInstructor.Microservice.Controllers
 
         // POST api/<AdminController>
         [HttpPost]
-        public object Post([FromBody] string value)
+        public async Task<ActionResult<ServiceResponse<object>>> Post([FromBody] AddCourseDto[] addCourseDto)
         {
-            return Ok("Course added");
+            var response = await courseRepo.AddCourse(addCourseDto);
+            if (response.Success)
+                return Ok(response);
+            return BadRequest(response);
         }
 
         // PUT api/<AdminController>/5

@@ -1,4 +1,5 @@
 using AdminAndInstructor.Microservice.Data;
+using AdminAndInstructor.Microservice.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -44,6 +45,7 @@ namespace AdminAndInstructor.Microservice
             });
             services.AddDbContext<DataContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddTransient<ICourseRepo, CourseRepo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

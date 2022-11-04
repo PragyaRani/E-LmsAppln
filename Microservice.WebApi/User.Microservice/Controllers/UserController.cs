@@ -1,4 +1,5 @@
 ﻿using ApiCommonLibrary;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,14 @@ namespace User.Microservice.Controllers
         {
             userRepo = _userRepo;
         }
-        // GET: api/<UserController>
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
+      
+       
+        [Authorize]
+        [HttpGet]
+        public IEnumerable<string> Get()
+        {
+            return new string[] { "value1", "value2" };
+        }
 
         // GET api/<UserController>/5
         //[HttpGet("{id}")]
@@ -43,9 +46,12 @@ namespace User.Microservice.Controllers
             return BadRequest(response);
         }
         [HttpPost("login")]
-        public object Register([FromBody] SignInDto user)
+        public async Task<ActionResult<ServiceResponse<object>>> Register([FromBody] SignInDto user)
         {
-            return Ok("User resgistered successfully");
+            var response = await userRepo.Login(user);
+            if (response.Success)
+                return Ok(response);
+            return BadRequest(response);
         }
 
         //// PUT api/<UserController>/5

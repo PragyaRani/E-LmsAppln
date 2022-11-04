@@ -1,6 +1,7 @@
 ﻿using AdminAndInstructor.Microservice.Dto;
 using AdminAndInstructor.Microservice.Repository;
 using ApiCommonLibrary;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -46,9 +47,12 @@ namespace AdminAndInstructor.Microservice.Controllers
 
         // PUT api/<AdminController>/5
         [HttpPut("{id}")]
-        public object Put(int id, [FromBody] string value)
+        public async Task<ActionResult<ServiceResponse<object>>> Put(int id, [FromBody] UpdateCourseDto updateCourseDto)
         {
-            return Ok("Course updated , "+ id.ToString());
+            var response = await courseRepo.UpdateCourse(id, updateCourseDto);
+            if (response.Success)
+                return Ok(response);
+            return BadRequest(response);
         }
 
         // DELETE api/<AdminController>/5

@@ -29,5 +29,7 @@ namespace User.Microservice.Models
         [Required]
         [MaxLength(50)]
         public string Password { get; set; }
+
+        public string Role { get; set; }
     }
 }

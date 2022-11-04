@@ -1,6 +1,18 @@
 {
   "Routes": [
     {
+      "DownstreamPathTemplate": "/api/user/register",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44344
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1/elms/user/signup",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/admin",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -10,7 +22,11 @@
         }
       ],
       "UpstreamPathTemplate": "/api/v1/courseware/admin",
-      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
+      "UpstreamHttpMethod": [ "POST", "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     },
     {
       "DownstreamPathTemplate": "/api/admin/{id}",
@@ -22,7 +38,24 @@
         }
       ],
       "UpstreamPathTemplate": "/api/v1/courseware/course/{id}",
-      "UpstreamHttpMethod": [ "GET", "DELETE","PUT" ]
+      "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/User/login",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44344
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1/elms/user/sign-in",
+      "UpstreamHttpMethod": [ "POST" ]
     }
   ]
 }

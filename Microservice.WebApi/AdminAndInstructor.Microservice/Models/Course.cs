@@ -11,7 +11,7 @@ namespace AdminAndInstructor.Microservice.Models
         public string Tag { get; set; }
         public int Rating { get; set; }
         public string Author { get; set; }
-        public DateTime? Created { get; set; }
+        public DateTime Created = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
         public string Language { get; set; }
         public decimal Hours { get; set; }
         public Category Categories { get; set; }

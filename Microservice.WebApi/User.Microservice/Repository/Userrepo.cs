@@ -6,15 +6,19 @@ using User.Microservice.DTO;
 using User.Microservice.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ApiCommonLibrary.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace User.Microservice.Repository
 {
     public class Userrepo : IUserRepo
     {
         DataContext dataContext;
-        public Userrepo(DataContext _dataContext)
+        IConfiguration configuration;
+        public Userrepo(DataContext _dataContext, IConfiguration _configuration)
         {
             dataContext = _dataContext;
+            configuration = _configuration;
         }
 
         public async Task<bool> IsEmailExist(string email)
@@ -46,8 +50,9 @@ namespace User.Microservice.Repository
                     };
                     dataContext.Users.Add(user);
                     await dataContext.SaveChangesAsync();
+                   
                     return new ServiceResponse<dynamic>() {
-                        Data = user.UserId
+                       
                     };
                 }
                 return new ServiceResponse<dynamic>()
@@ -65,6 +70,33 @@ namespace User.Microservice.Repository
                    Message = ex.Message
                 };
             }
+        }
+
+        public async Task<ServiceResponse<dynamic>> Login(SignInDto signInDto)
+        {
+            var user = await dataContext.Users.FirstOrDefaultAsync(
+             x => x.Email == signInDto.Username && x.Password == signInDto.Password);
+            if (user == null)
+            {
+                return new ServiceResponse<dynamic>
+                {
+                    Success = false,
+                    Message = "Username or Password is wrong"
+                };
+            }
+            UserResponseDto userRes = new UserResponseDto
+            {
+                Name = user.Name,
+                Token = new TokenInfo().CreateToken(new UserResponse
+                    { UserId = user.UserId, Email = user.Email, Role = "User" },
+                        configuration.GetSection("AppSettings:Token").Value),
+                Username = user.Email,
+                Role = "user"
+            };
+            return new ServiceResponse<dynamic>()
+            {
+                Data = userRes
+            };
         }
     }
 }

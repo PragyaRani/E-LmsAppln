@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -7,12 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using User.Microservice.Data;
 using User.Microservice.Repository;
 
@@ -40,10 +39,28 @@ namespace User.Microservice
                     Title = "Implement Swagger UI",
                     Description = "A simple example to Implement Swagger UI",
                 });
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Description = "Standard Authorization header using the Bearer scheme, e.g \"bearer {token}\"",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.OperationFilter<SecurityRequirementsOperationFilter>();
             });
             services.AddDbContext<DataContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IUserRepo, Userrepo>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).
+               AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateIssuerSigningKey = false,
+                   IssuerSigningKey = new SymmetricSecurityKey(
+                       System.Text.Encoding.UTF8.GetBytes(
+                           Configuration.GetSection("AppSettings:Token").Value)),
+                   ValidateIssuer = false,
+                   ValidateAudience = false
+               });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,6 +78,7 @@ namespace User.Microservice
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

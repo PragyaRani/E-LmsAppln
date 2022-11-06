@@ -25,7 +25,7 @@ namespace AdminAndInstructor.Microservice.Repository
         }
         public async Task<ServiceResponse<dynamic>> AddCourse(AddCourseDto[] courseDto)
         {
-            List<Course> course = new List<Course>();
+            List<ApiCommonLibrary.DTO.Course> course = new List<ApiCommonLibrary.DTO.Course>();
             foreach (var element in courseDto)
             {
                 var categoryInfo = await dataContext.Category.
@@ -49,7 +49,7 @@ namespace AdminAndInstructor.Microservice.Repository
                     return new ServiceResponse<dynamic>
                         { Success = false, Message = "Content not exist" };
 
-                course.Add(new Course()
+                course.Add(new ApiCommonLibrary.DTO.Course()
                 {
                     Name = element.CourseName,
                     Tag = element.Tag,
@@ -58,12 +58,12 @@ namespace AdminAndInstructor.Microservice.Repository
                     Language = element.Language,
                     Hours = element.Hours,
                     Created = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss")),
-                    Categories = new Category()
+                    Categories = new ApiCommonLibrary.DTO.Category()
                     {
                         Id = categoryInfo.Id,
-                        Topics = topicInfo,
                     },
-                    Contents = contentInfo
+                    Contents = contentInfo,
+                    Topics = topicInfo,
                 });
                 //course.Categories = new Category()
                 //{
@@ -87,7 +87,7 @@ namespace AdminAndInstructor.Microservice.Repository
 
         public async Task<ServiceResponse<dynamic>> UpdateCourse(int id,UpdateCourseDto updateCourseDto)
         {
-            Course course =await dataContext.Course.FirstOrDefaultAsync(c => c.CourseId == id);
+            ApiCommonLibrary.DTO.Course course =await dataContext.Course.FirstOrDefaultAsync(c => c.CourseId == id);
             if (course == null)
             {
                 return new ServiceResponse<dynamic>
@@ -99,7 +99,7 @@ namespace AdminAndInstructor.Microservice.Repository
             }
                 course.Name = updateCourseDto.CourseName;
                 course.Tag = updateCourseDto.Tag;
-                course.Categories = new Category
+                course.Categories = new ApiCommonLibrary.DTO.Category
                 {
                     CategoryName = updateCourseDto.Category,
                     SubCategory = updateCourseDto.SubCategory

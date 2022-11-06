@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdminAndInstructor.Microservice.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221101164141_coursedb")]
+    [Migration("20221103112804_coursedb")]
     partial class coursedb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

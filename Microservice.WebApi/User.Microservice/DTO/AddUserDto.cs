@@ -20,5 +20,6 @@ namespace User.Microservice.DTO
         public string Email { get; set; }
         [Required(ErrorMessage = "password is required")]
         public string Password { get; set; }
+        
     }
 }

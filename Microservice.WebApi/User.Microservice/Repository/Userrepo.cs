@@ -7,6 +7,7 @@ using User.Microservice.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ApiCommonLibrary.Models;
+using ApiCommonLibrary.DTO;
 using Microsoft.Extensions.Configuration;
 
 namespace User.Microservice.Repository
@@ -23,7 +24,7 @@ namespace User.Microservice.Repository
 
         public async Task<bool> IsEmailExist(string email)
         {
-            var data = await dataContext.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+            var data = await dataContext.Students.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
             if(data == null)
             {
                 return false;
@@ -37,7 +38,7 @@ namespace User.Microservice.Repository
             {
                 if (!await IsEmailExist(addUserDto.Email))
                 {
-                    AddUser user =new AddUser()
+                    EStudent user =new EStudent()
                     {
                         Name = addUserDto.Name,
                         Address = addUserDto.Address,
@@ -48,7 +49,7 @@ namespace User.Microservice.Repository
                         Email = addUserDto.Email,
                         Password = addUserDto.Password,
                     };
-                    dataContext.Users.Add(user);
+                    dataContext.Students.Add(user);
                     await dataContext.SaveChangesAsync();
                    
                     return new ServiceResponse<dynamic>() {
@@ -74,7 +75,7 @@ namespace User.Microservice.Repository
 
         public async Task<ServiceResponse<dynamic>> Login(SignInDto signInDto)
         {
-            var user = await dataContext.Users.FirstOrDefaultAsync(
+            var user = await dataContext.Students.FirstOrDefaultAsync(
              x => x.Email == signInDto.Username && x.Password == signInDto.Password);
             if (user == null)
             {

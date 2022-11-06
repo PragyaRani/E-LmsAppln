@@ -1,6 +1,4 @@
-using AdminAndInstructor.Microservice.Data;
-using AdminAndInstructor.Microservice.Repository;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,14 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-namespace AdminAndInstructor.Microservice
+using Student.Microservice.Data;
+using System.Reflection;
+
+namespace Student.Microservice
 {
     public class Startup
     {
@@ -35,20 +30,16 @@ namespace AdminAndInstructor.Microservice
             services.AddSwaggerGen();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
-                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Description = "Standard Authorization header using the Bearer scheme, e.g \"bearer {token}\"",
-                    In = ParameterLocation.Header,
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey
+                    Version = "v1",
+                    Title = "Implement Swagger UI",
+                    Description = "A simple example to Implement Swagger UI",
                 });
-                c.OperationFilter<SecurityRequirementsOperationFilter>();
             });
             services.AddDbContext<DataContext>(options =>
-               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddTransient<ICourseRepo, CourseRepo>();
-          
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddMediatR(Assembly.GetExecutingAssembly());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,6 +57,8 @@ namespace AdminAndInstructor.Microservice
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

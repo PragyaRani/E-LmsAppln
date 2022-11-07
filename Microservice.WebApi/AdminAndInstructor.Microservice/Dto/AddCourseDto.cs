@@ -2,6 +2,7 @@
 {
     public class AddCourseDto
     {
+       
         public string CourseName { get; set; }
         public string Tag { get; set; }
         public string Category { get; set; }

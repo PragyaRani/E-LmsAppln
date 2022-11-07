@@ -36,14 +36,14 @@ namespace Student.Microservice.Feature.StudentFeature.Update
                 {
                     return default;
                 }
-                var studentandcourseExist = dataContext.StudentCourse.Where(sc => sc.EnrolledStudent.UserId == student.UserId && 
+                var studentandcourseExist = dataContext.StudentCourse.Where(sc => sc.EStudent.StudentId == student.StudentId && 
                             sc.Course.CourseId == course.CourseId).FirstOrDefault();
                 if(studentandcourseExist != null)
                 {
                     return studentandcourseExist.Id;
                 }
 
-                StudentCourse sc = new StudentCourse { EnrolledStudent = student, Course = course };
+                StudentCourse sc = new StudentCourse { EStudent = student, Course = course };
                 dataContext.StudentCourse.Add(sc);
                 await dataContext.SaveChangesAsync();
                 return sc.Id;

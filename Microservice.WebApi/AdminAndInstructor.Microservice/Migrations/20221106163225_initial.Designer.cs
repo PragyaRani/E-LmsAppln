@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdminAndInstructor.Microservice.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221103112804_coursedb")]
-    partial class coursedb
+    [Migration("20221106163225_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace AdminAndInstructor.Microservice.Migrations
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("AdminAndInstructor.Microservice.Models.Category", b =>
+            modelBuilder.Entity("ApiCommonLibrary.DTO.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,17 +34,12 @@ namespace AdminAndInstructor.Microservice.Migrations
                     b.Property<string>("SubCategory")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TopicsId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("TopicsId");
 
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("AdminAndInstructor.Microservice.Models.Content", b =>
+            modelBuilder.Entity("ApiCommonLibrary.DTO.Content", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,7 +57,7 @@ namespace AdminAndInstructor.Microservice.Migrations
                     b.ToTable("Content");
                 });
 
-            modelBuilder.Entity("AdminAndInstructor.Microservice.Models.Course", b =>
+            modelBuilder.Entity("ApiCommonLibrary.DTO.Course", b =>
                 {
                     b.Property<int>("CourseId")
                         .ValueGeneratedOnAdd()
@@ -78,9 +73,6 @@ namespace AdminAndInstructor.Microservice.Migrations
                     b.Property<int?>("ContentsId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime2");
-
                     b.Property<decimal>("Hours")
                         .HasColumnType("decimal(18,2)");
 
@@ -90,11 +82,14 @@ namespace AdminAndInstructor.Microservice.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Tag")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TopicsId")
+                        .HasColumnType("int");
 
                     b.HasKey("CourseId");
 
@@ -102,10 +97,80 @@ namespace AdminAndInstructor.Microservice.Migrations
 
                     b.HasIndex("ContentsId");
 
+                    b.HasIndex("TopicsId");
+
                     b.ToTable("Course");
                 });
 
-            modelBuilder.Entity("AdminAndInstructor.Microservice.Models.Topic", b =>
+            modelBuilder.Entity("ApiCommonLibrary.DTO.EStudent", b =>
+                {
+                    b.Property<int>("StudentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Pin")
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("State")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("StudentId");
+
+                    b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("ApiCommonLibrary.DTO.StudentCourse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EStudentStudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("EStudentStudentId");
+
+                    b.ToTable("StudentCourse");
+                });
+
+            modelBuilder.Entity("ApiCommonLibrary.DTO.Topic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,28 +185,40 @@ namespace AdminAndInstructor.Microservice.Migrations
                     b.ToTable("Topic");
                 });
 
-            modelBuilder.Entity("AdminAndInstructor.Microservice.Models.Category", b =>
+            modelBuilder.Entity("ApiCommonLibrary.DTO.Course", b =>
                 {
-                    b.HasOne("AdminAndInstructor.Microservice.Models.Topic", "Topics")
-                        .WithMany()
-                        .HasForeignKey("TopicsId");
-
-                    b.Navigation("Topics");
-                });
-
-            modelBuilder.Entity("AdminAndInstructor.Microservice.Models.Course", b =>
-                {
-                    b.HasOne("AdminAndInstructor.Microservice.Models.Category", "Categories")
+                    b.HasOne("ApiCommonLibrary.DTO.Category", "Categories")
                         .WithMany()
                         .HasForeignKey("CategoriesId");
 
-                    b.HasOne("AdminAndInstructor.Microservice.Models.Content", "Contents")
+                    b.HasOne("ApiCommonLibrary.DTO.Content", "Contents")
                         .WithMany()
                         .HasForeignKey("ContentsId");
+
+                    b.HasOne("ApiCommonLibrary.DTO.Topic", "Topics")
+                        .WithMany()
+                        .HasForeignKey("TopicsId");
 
                     b.Navigation("Categories");
 
                     b.Navigation("Contents");
+
+                    b.Navigation("Topics");
+                });
+
+            modelBuilder.Entity("ApiCommonLibrary.DTO.StudentCourse", b =>
+                {
+                    b.HasOne("ApiCommonLibrary.DTO.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId");
+
+                    b.HasOne("ApiCommonLibrary.DTO.EStudent", "EStudent")
+                        .WithMany()
+                        .HasForeignKey("EStudentStudentId");
+
+                    b.Navigation("Course");
+
+                    b.Navigation("EStudent");
                 });
 #pragma warning restore 612, 618
         }

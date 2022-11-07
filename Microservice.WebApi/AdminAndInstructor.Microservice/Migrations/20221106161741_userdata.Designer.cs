@@ -4,14 +4,16 @@ using AdminAndInstructor.Microservice.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdminAndInstructor.Microservice.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20221106161741_userdata")]
+    partial class userdata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,9 +139,6 @@ namespace AdminAndInstructor.Microservice.Migrations
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("State")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -147,28 +146,6 @@ namespace AdminAndInstructor.Microservice.Migrations
                     b.HasKey("StudentId");
 
                     b.ToTable("Students");
-                });
-
-            modelBuilder.Entity("ApiCommonLibrary.DTO.StudentCourse", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EStudentStudentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("EStudentStudentId");
-
-                    b.ToTable("StudentCourse");
                 });
 
             modelBuilder.Entity("ApiCommonLibrary.DTO.Topic", b =>
@@ -205,21 +182,6 @@ namespace AdminAndInstructor.Microservice.Migrations
                     b.Navigation("Contents");
 
                     b.Navigation("Topics");
-                });
-
-            modelBuilder.Entity("ApiCommonLibrary.DTO.StudentCourse", b =>
-                {
-                    b.HasOne("ApiCommonLibrary.DTO.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId");
-
-                    b.HasOne("ApiCommonLibrary.DTO.EStudent", "EStudent")
-                        .WithMany()
-                        .HasForeignKey("EStudentStudentId");
-
-                    b.Navigation("Course");
-
-                    b.Navigation("EStudent");
                 });
 #pragma warning restore 612, 618
         }

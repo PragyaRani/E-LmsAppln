@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -14,6 +15,7 @@ namespace AdminAndInstructor.Microservice.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AdminController : ControllerBase
     {
         public ICourseRepo courseRepo;
@@ -39,6 +41,9 @@ namespace AdminAndInstructor.Microservice.Controllers
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<object>>> Post([FromBody] AddCourseDto[] addCourseDto)
         {
+            var role = (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value);
+            if (role != "Admin")
+                return Unauthorized("You are not allowed to perform operation");
             var response = await courseRepo.AddCourse(addCourseDto);
             if (response.Success)
                 return Ok(response);
@@ -46,9 +51,13 @@ namespace AdminAndInstructor.Microservice.Controllers
         }
 
         // PUT api/<AdminController>/5
+       
         [HttpPut("{id}")]
         public async Task<ActionResult<ServiceResponse<object>>> Put(int id, [FromBody] UpdateCourseDto updateCourseDto)
         {
+            var role = (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value);
+            if (role != "Admin")
+                return Unauthorized("You are not allowed to perform operation");
             var response = await courseRepo.UpdateCourse(id, updateCourseDto);
             if (response.Success)
                 return Ok(response);

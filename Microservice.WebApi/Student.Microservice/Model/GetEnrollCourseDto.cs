@@ -12,8 +12,8 @@ namespace Student.Microservice.Model
         public string Author { get; set; }
         public string Language { get; set; }
         public decimal Hours { get; set; }
-        public DateTime Created { get; set; }
-        public int Rating { get; set; }
+        public string Created { get; set; }
+        public decimal Rating { get; set; }
         public string Tag { get; set; }
     }
 }

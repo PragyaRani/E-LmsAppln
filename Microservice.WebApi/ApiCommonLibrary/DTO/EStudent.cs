@@ -11,7 +11,7 @@ namespace ApiCommonLibrary.DTO
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string UserId { get; set; }
+        public int StudentId { get; set; }
 
         [Required, MaxLength(50)]
         public string Name { get; set; }
@@ -20,7 +20,7 @@ namespace ApiCommonLibrary.DTO
         [MaxLength(50)]
         public string City { get; set; }
 
-        [MaxLength(6)]
+        [MinLength(6),MaxLength(6)]
         public string Pin { get; set; }
         [MaxLength(50)]
         public string State { get; set; }
@@ -34,14 +34,13 @@ namespace ApiCommonLibrary.DTO
         [MaxLength(50)]
         public string Password { get; set; }
 
-        public string Role { get; set; }
-        public ICollection<Course> Courses { get; set; }
+        public string Role { get; set; } = "Student";
     }
 
     public class StudentCourse
     {
         public int Id { get; set; }
-        public EStudent EnrolledStudent { get; set; }
+        public EStudent EStudent { get; set; }
         public Course Course { get; set; }
     }
 }

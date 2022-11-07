@@ -3,7 +3,6 @@ using System;
 using System.Threading.Tasks;
 using User.Microservice.Data;
 using User.Microservice.DTO;
-using User.Microservice.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ApiCommonLibrary.Models;
@@ -89,10 +88,10 @@ namespace User.Microservice.Repository
             {
                 Name = user.Name,
                 Token = new TokenInfo().CreateToken(new UserResponse
-                    { UserId = user.UserId, Email = user.Email, Role = "User" },
+                    { UserId = user.StudentId, Email = user.Email, Role = user.Role },
                         configuration.GetSection("AppSettings:Token").Value),
                 Username = user.Email,
-                Role = "user"
+                Role = user.Role
             };
             return new ServiceResponse<dynamic>()
             {

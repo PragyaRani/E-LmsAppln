@@ -12,7 +12,7 @@ namespace Student.Microservice.Feature.StudentFeature.Query
 {
     public class GetEnrollCoursebyStudent:IRequest<IEnumerable<EnrollCourseDto>>
     {
-       public string Id { get; set; }
+       public int Id { get; set; }
 
         public class GetEnrollCoursebyStudentHandler : IRequestHandler<GetEnrollCoursebyStudent, IEnumerable<EnrollCourseDto>>
         {
@@ -23,7 +23,7 @@ namespace Student.Microservice.Feature.StudentFeature.Query
             }
             public async Task<IEnumerable<EnrollCourseDto>> Handle(GetEnrollCoursebyStudent request, CancellationToken cancellationToken)
             {
-                var data = await context.StudentCourse.Where(sc => sc.EnrolledStudent.UserId == request.Id)
+                var data = await context.StudentCourse.Where(sc => sc.EStudent.StudentId == request.Id)
                     .Join(context.Course, sc => sc.Course.CourseId, 
                     c => c.CourseId,
                     (studCourse,course) => new EnrollCourseDto

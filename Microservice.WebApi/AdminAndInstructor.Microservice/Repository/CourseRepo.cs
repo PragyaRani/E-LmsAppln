@@ -1,6 +1,5 @@
 ﻿using AdminAndInstructor.Microservice.Data;
 using AdminAndInstructor.Microservice.Dto;
-using AdminAndInstructor.Microservice.Models;
 using ApiCommonLibrary;
 using System.Threading.Tasks;
 using EFCore.BulkExtensions;
@@ -57,7 +56,6 @@ namespace AdminAndInstructor.Microservice.Repository
                     Author = element.Author,
                     Language = element.Language,
                     Hours = element.Hours,
-                    Created = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss")),
                     Categories = new ApiCommonLibrary.DTO.Category()
                     {
                         Id = categoryInfo.Id,

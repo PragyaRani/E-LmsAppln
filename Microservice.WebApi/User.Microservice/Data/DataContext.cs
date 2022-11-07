@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using User.Microservice.Models;
 using ApiCommonLibrary.DTO;
 
 namespace User.Microservice.Data

@@ -31,7 +31,7 @@ namespace Student.Microservice.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            return Ok(await Mediator.Send(new GetEnrollCoursebyStudent { Id = id.ToString() }));
+            return Ok(await Mediator.Send(new GetEnrollCoursebyStudent { Id = id }));
         }
 
         // POST api/<CourseController>

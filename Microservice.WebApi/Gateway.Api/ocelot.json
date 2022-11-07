@@ -71,15 +71,12 @@
           "Port": 44340
         }
       ],
+      "UpstreamPathTemplate": "/api/v1/enrolment/courseware/{id}",
+      "UpstreamHttpMethod": [ "PUT" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
-      },
-      "RouteClaimsRequirement": {
-        "Role": "Student"
-      },
-      "UpstreamPathTemplate": "/api/v1/enrolment/courseware/{id}",
-      "UpstreamHttpMethod": [ "PUT" ]
+      }
     },
 
     {

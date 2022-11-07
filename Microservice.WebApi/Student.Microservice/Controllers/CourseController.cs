@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Student.Microservice.Feature.StudentFeature.Query;
@@ -15,6 +16,7 @@ namespace Student.Microservice.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CourseController : ControllerBase
     {
         private IMediator _mediator;

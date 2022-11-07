@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ApiCommonLibrary.Models;
 using ApiCommonLibrary.DTO;
 using Microsoft.Extensions.Configuration;
+using User.Microservice.Helpers;
 
 namespace User.Microservice.Repository
 {
@@ -46,7 +47,7 @@ namespace User.Microservice.Repository
                         State = addUserDto.State,
                         Phone = addUserDto.Phone.ToString(),
                         Email = addUserDto.Email,
-                        Password = addUserDto.Password,
+                        Password = PasswordHash.Hash(addUserDto.Password),
                     };
                     dataContext.Students.Add(user);
                     await dataContext.SaveChangesAsync();
@@ -75,7 +76,7 @@ namespace User.Microservice.Repository
         public async Task<ServiceResponse<dynamic>> Login(SignInDto signInDto)
         {
             var user = await dataContext.Students.FirstOrDefaultAsync(
-             x => x.Email == signInDto.Username && x.Password == signInDto.Password);
+             x => x.Email == signInDto.Username);
             if (user == null)
             {
                 return new ServiceResponse<dynamic>
@@ -83,6 +84,16 @@ namespace User.Microservice.Repository
                     Success = false,
                     Message = "Username or Password is wrong"
                 };
+            } else if (user != null)
+            {
+                if(!PasswordHash.IsVerify(signInDto.Password, user.Password))
+                {
+                    return new ServiceResponse<dynamic>
+                    {
+                        Success = false,
+                        Message = "Username or Password is wrong"
+                    };
+                }
             }
             UserResponseDto userRes = new UserResponseDto
             {

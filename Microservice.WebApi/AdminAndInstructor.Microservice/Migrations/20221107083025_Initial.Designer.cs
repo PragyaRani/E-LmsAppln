@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdminAndInstructor.Microservice.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221106163225_initial")]
-    partial class initial
+    [Migration("20221107083025_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -138,6 +138,9 @@ namespace AdminAndInstructor.Microservice.Migrations
                     b.Property<string>("Pin")
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
                         .HasMaxLength(50)

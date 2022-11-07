@@ -2,7 +2,7 @@
 
 namespace AdminAndInstructor.Microservice.Migrations
 {
-    public partial class userdata : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -47,7 +47,8 @@ namespace AdminAndInstructor.Microservice.Migrations
                     State = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Phone = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -106,6 +107,32 @@ namespace AdminAndInstructor.Microservice.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "StudentCourse",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EStudentStudentId = table.Column<int>(type: "int", nullable: true),
+                    CourseId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentCourse", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StudentCourse_Course_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Course",
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StudentCourse_Students_EStudentStudentId",
+                        column: x => x.EStudentStudentId,
+                        principalTable: "Students",
+                        principalColumn: "StudentId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Course_CategoriesId",
                 table: "Course",
@@ -120,10 +147,23 @@ namespace AdminAndInstructor.Microservice.Migrations
                 name: "IX_Course_TopicsId",
                 table: "Course",
                 column: "TopicsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentCourse_CourseId",
+                table: "StudentCourse",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentCourse_EStudentStudentId",
+                table: "StudentCourse",
+                column: "EStudentStudentId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "StudentCourse");
+
             migrationBuilder.DropTable(
                 name: "Course");
 

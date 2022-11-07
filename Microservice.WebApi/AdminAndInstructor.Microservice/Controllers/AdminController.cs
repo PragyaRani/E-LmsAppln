@@ -3,6 +3,7 @@ using AdminAndInstructor.Microservice.Repository;
 using ApiCommonLibrary;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +19,12 @@ namespace AdminAndInstructor.Microservice.Controllers
     [Authorize]
     public class AdminController : ControllerBase
     {
-        public ICourseRepo courseRepo;
-        public AdminController(ICourseRepo _courseRepo)
+        private readonly ICourseRepo courseRepo;
+        private readonly ILogger logger;
+        public AdminController(ICourseRepo _courseRepo, ILogger<AdminController> _logger)
         {
             courseRepo = _courseRepo;
+            logger = _logger;
         }
         // GET: api/<AdminController>
         [HttpGet]
@@ -41,6 +44,7 @@ namespace AdminAndInstructor.Microservice.Controllers
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<object>>> Post([FromBody] AddCourseDto[] addCourseDto)
         {
+            logger.LogInformation("Task<ActionResult<ServiceResponse<object>>> Post");
             var role = (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value);
             if (role != "Admin")
                 return Unauthorized("You are not allowed to perform operation");
@@ -48,6 +52,7 @@ namespace AdminAndInstructor.Microservice.Controllers
             if (response.Success)
                 return Ok(response);
             return BadRequest(response);
+           
         }
 
         // PUT api/<AdminController>/5
@@ -55,6 +60,7 @@ namespace AdminAndInstructor.Microservice.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<ServiceResponse<object>>> Put(int id, [FromBody] UpdateCourseDto updateCourseDto)
         {
+            logger.LogInformation("Task<ActionResult<ServiceResponse<object>>> Put");
             var role = (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value);
             if (role != "Admin")
                 return Unauthorized("You are not allowed to perform operation");

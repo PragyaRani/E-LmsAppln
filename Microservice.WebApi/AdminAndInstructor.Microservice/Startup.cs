@@ -1,5 +1,8 @@
+using AdminAndInstructor.Microservice.Consumer;
 using AdminAndInstructor.Microservice.Data;
 using AdminAndInstructor.Microservice.Repository;
+using GreenPipes;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,6 +34,26 @@ namespace AdminAndInstructor.Microservice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<EnrollCourseConsume>();
+                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+                {
+                    cfg.UseHealthCheck(provider);
+                    cfg.Host(new Uri("rabbitmq://localhost"), h =>
+                    {
+                        h.Username("guest");
+                        h.Password("guest");
+                    });
+                    cfg.ReceiveEndpoint("enrollCourseQueue", ep =>
+                    {
+                        ep.PrefetchCount = 16;
+                        ep.UseMessageRetry(r => r.Interval(2, 100));
+                        ep.ConfigureConsumer<EnrollCourseConsume>(provider);
+                    });
+                }));
+            });
+            services.AddMassTransitHostedService();
             services.AddControllers();
             services.AddSwaggerGen();
             services.AddSwaggerGen(c =>
@@ -76,6 +99,8 @@ namespace AdminAndInstructor.Microservice
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors(x => x.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader()
+            .AllowCredentials());
             app.UseAuthentication();
             app.UseAuthorization();
 

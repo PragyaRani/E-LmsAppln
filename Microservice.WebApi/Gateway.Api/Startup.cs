@@ -67,6 +67,8 @@ namespace Gateway.Api
             }
             
             app.UseRouting();
+            app.UseCors(x => x.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader()
+           .AllowCredentials());
             app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>

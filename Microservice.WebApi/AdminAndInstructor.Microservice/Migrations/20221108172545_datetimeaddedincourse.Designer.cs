@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdminAndInstructor.Microservice.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221107083025_Initial")]
-    partial class Initial
+    [Migration("20221108172545_datetimeaddedincourse")]
+    partial class datetimeaddedincourse
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -72,6 +72,11 @@ namespace AdminAndInstructor.Microservice.Migrations
 
                     b.Property<int?>("ContentsId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<decimal>("Hours")
                         .HasColumnType("decimal(18,2)");
@@ -149,6 +154,26 @@ namespace AdminAndInstructor.Microservice.Migrations
                     b.HasKey("StudentId");
 
                     b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("ApiCommonLibrary.DTO.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("EnrollDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("ApiCommonLibrary.DTO.StudentCourse", b =>

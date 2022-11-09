@@ -78,6 +78,8 @@ namespace User.Microservice
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors(x => x.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader()
+            .AllowCredentials());
             app.UseAuthentication();
 
             app.UseAuthorization();

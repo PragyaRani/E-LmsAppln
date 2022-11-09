@@ -47,7 +47,7 @@
       "RouteClaimsRequirement": "Admin"
     },
     {
-      "DownstreamPathTemplate": "/api/Course",
+      "DownstreamPathTemplate": "/api/course",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -63,7 +63,35 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Course/enroll/{id}",
+      "DownstreamPathTemplate": "/api/admin/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44391
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1/courseware/catalogue/{id}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/admin/notification",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44391
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1/elms/notification",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/course/enroll/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {

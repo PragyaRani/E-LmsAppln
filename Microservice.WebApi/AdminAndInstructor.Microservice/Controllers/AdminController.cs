@@ -27,17 +27,17 @@ namespace AdminAndInstructor.Microservice.Controllers
             logger = _logger;
         }
         // GET: api/<AdminController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpGet("notification")]
+        public async Task<ActionResult<ServiceResponse<object>>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return Ok(await courseRepo.GetNotification());
         }
 
         // GET api/<AdminController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult> Get(int id)
         {
-            return "value";
+            return  Ok(await courseRepo.GetCoursebyId(id));
         }
 
         // POST api/<AdminController>

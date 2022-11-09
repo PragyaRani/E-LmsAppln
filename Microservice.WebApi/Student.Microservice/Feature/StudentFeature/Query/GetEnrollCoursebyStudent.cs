@@ -32,7 +32,7 @@ namespace Student.Microservice.Feature.StudentFeature.Query
                         Author= course.Author,
                         Language = course.Language,
                         Hours = course.Hours,
-                        Created = course.Created,
+                        Created = course.CreatedDate.ToString(),
                         Rating = course.Rating,
                         Tag  = course.Tag
                     }).ToListAsync();

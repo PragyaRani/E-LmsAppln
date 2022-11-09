@@ -1,4 +1,6 @@
 ﻿using ApiCommonLibrary.DTO;
+using ApiCommonLibrary.Models;
+using MassTransit;
 using MediatR;
 using Student.Microservice.Data;
 using Student.Microservice.Model;
@@ -22,10 +24,13 @@ namespace Student.Microservice.Feature.StudentFeature.Update
         public string Author { get; set; }
         public class EnrollCourseToStudentCommandHandler : IRequestHandler<EnrollCourseToStudentCommand, int>
         {
-            private readonly DataContext dataContext; 
-            public EnrollCourseToStudentCommandHandler(DataContext _dataContext)
+            private readonly DataContext dataContext;
+            private readonly IBus bus;
+            public EnrollCourseToStudentCommandHandler(DataContext _dataContext, IBus _bus)
             {
                 dataContext = _dataContext;
+                bus = _bus;
+
             }
             public async Task<int> Handle(EnrollCourseToStudentCommand request, CancellationToken cancellationToken)
             {
@@ -38,7 +43,18 @@ namespace Student.Microservice.Feature.StudentFeature.Update
                 }
                 var studentandcourseExist = dataContext.StudentCourse.Where(sc => sc.EStudent.StudentId == student.StudentId && 
                             sc.Course.CourseId == course.CourseId).FirstOrDefault();
-                if(studentandcourseExist != null)
+                await dataContext.SaveChangesAsync();
+                Uri uri = new Uri("rabbitmq://localhost/enrollCourseQueue");
+                var endPoint = await bus.GetSendEndpoint(uri);
+                EnrollCourseModel enrollCourse = new EnrollCourseModel
+                {
+                    Student = student.Name,
+                    EnrolleDate = DateTime.Now,
+                    Course = course.Name,
+                    CourseId = course.CourseId
+                };
+                await endPoint.Send(enrollCourse);
+                if (studentandcourseExist != null)
                 {
                     return studentandcourseExist.Id;
                 }

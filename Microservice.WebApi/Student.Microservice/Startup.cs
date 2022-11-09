@@ -1,3 +1,6 @@
+
+using MassTransit;
+using MassTransit.MultiBus;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Student.Microservice.Data;
+using System;
 using System.Reflection;
 
 namespace Student.Microservice
@@ -28,6 +32,19 @@ namespace Student.Microservice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMassTransit(x =>
+            {
+                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(config =>
+                {
+                    config.UseHealthCheck(provider);
+                    config.Host(new Uri("rabbitmq://localhost"), h =>
+                    {
+                        h.Username("guest");
+                        h.Password("guest");
+                    });
+                }));
+            });
+            services.AddMassTransitHostedService();
             services.AddControllers();
             services.AddSwaggerGen();
             services.AddSwaggerGen(c =>
@@ -52,6 +69,7 @@ namespace Student.Microservice
                    ValidateIssuer = false,
                    ValidateAudience = false
                });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +87,8 @@ namespace Student.Microservice
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors(x => x.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader()
+            .AllowCredentials());
             app.UseAuthentication();
             app.UseAuthorization();
 

@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using Microsoft.EntityFrameworkCore;
+using ApiCommonLibrary.Models;
+using ApiCommonLibrary.DTO;
+using System.Collections;
 
 namespace AdminAndInstructor.Microservice.Repository
 {
@@ -14,6 +17,10 @@ namespace AdminAndInstructor.Microservice.Repository
     {
         public Task<ServiceResponse<dynamic>> AddCourse(AddCourseDto[] courseDto);
         public Task<ServiceResponse<dynamic>> UpdateCourse(int id,UpdateCourseDto courseDto);
+        public Task<object> GetCoursebyId(int id);
+
+        public Task AddNotification(EnrollCourseModel enrollCourseModel);
+        public Task<IList> GetNotification();
     }
     public class CourseRepo : ICourseRepo
     {
@@ -22,9 +29,14 @@ namespace AdminAndInstructor.Microservice.Repository
         {
             dataContext = _dataContext;
         }
+        public async Task<object> GetCoursebyId(int id)
+        {
+            return await dataContext.Course.Include(c => c.Categories).Include(c => c.Contents).
+                Where(c => c.CourseId == id).FirstOrDefaultAsync();
+        }
         public async Task<ServiceResponse<dynamic>> AddCourse(AddCourseDto[] courseDto)
         {
-            List<ApiCommonLibrary.DTO.Course> course = new List<ApiCommonLibrary.DTO.Course>();
+            List<Course> course = new List<Course>();
             foreach (var element in courseDto)
             {
                 var categoryInfo = await dataContext.Category.
@@ -48,7 +60,7 @@ namespace AdminAndInstructor.Microservice.Repository
                     return new ServiceResponse<dynamic>
                         { Success = false, Message = "Content not exist" };
 
-                course.Add(new ApiCommonLibrary.DTO.Course()
+                course.Add(new Course()
                 {
                     Name = element.CourseName,
                     Tag = element.Tag,
@@ -56,7 +68,7 @@ namespace AdminAndInstructor.Microservice.Repository
                     Author = element.Author,
                     Language = element.Language,
                     Hours = element.Hours,
-                    Categories = new ApiCommonLibrary.DTO.Category()
+                    Categories = new Category()
                     {
                         Id = categoryInfo.Id,
                     },
@@ -110,6 +122,17 @@ namespace AdminAndInstructor.Microservice.Repository
                 {
                     Message ="Course has been updated successfully"
                 };
+        }
+
+        public async Task AddNotification(EnrollCourseModel enrollCourseModel)
+        {
+           dataContext.Notification.Add(new Notification
+            { Name = $"{enrollCourseModel.Student} enrolled for course {enrollCourseModel.Course}" });
+           await dataContext.SaveChangesAsync();
+        }
+        public async Task<IList> GetNotification()
+        {
+            return await dataContext.Notification.ToListAsync();
         }
     }
 }

@@ -97,6 +97,7 @@ namespace User.Microservice.Repository
             }
             UserResponseDto userRes = new UserResponseDto
             {
+                Id = user.StudentId,
                 Name = user.Name,
                 Token = new TokenInfo().CreateToken(new UserResponse
                     { UserId = user.StudentId, Email = user.Email, Role = user.Role },

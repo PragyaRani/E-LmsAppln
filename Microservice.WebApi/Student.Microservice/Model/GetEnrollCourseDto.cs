@@ -8,6 +8,7 @@ namespace Student.Microservice.Model
 {
     public class EnrollCourseDto
     {
+        public int Id { get; set; }
         public string CourseName { get; set; }
         public string Author { get; set; }
         public string Language { get; set; }

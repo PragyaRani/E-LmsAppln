@@ -21,6 +21,7 @@ namespace Student.Microservice.Feature.StudentFeature.Query
             }
             public async Task<IEnumerable<Course>> Handle(GetAllCoursesQuery request, CancellationToken cancellationToken)
             {
+               
                 var courseList = await context.Course.Include(c => c.Categories).Include(c => c.Contents)
                     .ToListAsync();
                 if(courseList == null)

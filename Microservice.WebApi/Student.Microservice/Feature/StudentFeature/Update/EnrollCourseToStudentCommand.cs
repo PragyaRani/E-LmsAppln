@@ -1,4 +1,5 @@
-﻿using ApiCommonLibrary.DTO;
+﻿using ApiCommonLibrary;
+using ApiCommonLibrary.DTO;
 using ApiCommonLibrary.Models;
 using MassTransit;
 using MediatR;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Student.Microservice.Feature.StudentFeature.Update
 {
-    public class EnrollCourseToStudentCommand: IRequest<int>
+    public class EnrollCourseToStudentCommand: IRequest<ServiceResponse<object>>
     {
         [Required(ErrorMessage = "student email is required")]
         public string StudEmail { get; set; }
@@ -22,7 +23,7 @@ namespace Student.Microservice.Feature.StudentFeature.Update
         //public string CourseId { get; set; }
         public string CourseName { get; set; }
         public string Author { get; set; }
-        public class EnrollCourseToStudentCommandHandler : IRequestHandler<EnrollCourseToStudentCommand, int>
+        public class EnrollCourseToStudentCommandHandler : IRequestHandler<EnrollCourseToStudentCommand, ServiceResponse<object>>
         {
             private readonly DataContext dataContext;
             private readonly IBus bus;
@@ -32,18 +33,22 @@ namespace Student.Microservice.Feature.StudentFeature.Update
                 bus = _bus;
 
             }
-            public async Task<int> Handle(EnrollCourseToStudentCommand request, CancellationToken cancellationToken)
+            public async Task<ServiceResponse<object>> Handle(EnrollCourseToStudentCommand request, CancellationToken cancellationToken)
             {
                 EStudent student = dataContext.Students.Where(s => s.Email.ToLower() == request.StudEmail.ToLower()).FirstOrDefault();
-                Course course = dataContext.Course.Where(c => (c.CourseId == request.EnrollCourseId) ||
-                (c.Name.ToLower() == request.CourseName.ToLower() && c.Author == request.Author.ToLower())).FirstOrDefault();
+                
+                //(c.Name.ToLower() == request.CourseName.ToLower() && c.Author == request.Author.ToLower())
+                Course course = dataContext.Course.Where(c => (c.CourseId == request.EnrollCourseId)).FirstOrDefault();
                 if(course == null || student == null)
                 {
-                    return default;
+                    return new ServiceResponse<object>()
+                    {
+                        Message = "Student or Course not exist"
+                    };
                 }
                 var studentandcourseExist = dataContext.StudentCourse.Where(sc => sc.EStudent.StudentId == student.StudentId && 
                             sc.Course.CourseId == course.CourseId).FirstOrDefault();
-                await dataContext.SaveChangesAsync();
+                //await dataContext.SaveChangesAsync();
                 Uri uri = new Uri("rabbitmq://localhost/enrollCourseQueue");
                 var endPoint = await bus.GetSendEndpoint(uri);
                 EnrollCourseModel enrollCourse = new EnrollCourseModel
@@ -56,13 +61,20 @@ namespace Student.Microservice.Feature.StudentFeature.Update
                 await endPoint.Send(enrollCourse);
                 if (studentandcourseExist != null)
                 {
-                    return studentandcourseExist.Id;
+                    return new ServiceResponse<object>()
+                    {
+                        Message = "Student is already enrolled for course",
+                        Data = studentandcourseExist.Id
+                    };
                 }
 
                 StudentCourse sc = new StudentCourse { EStudent = student, Course = course };
                 dataContext.StudentCourse.Add(sc);
                 await dataContext.SaveChangesAsync();
-                return sc.Id;
+                return new ServiceResponse<object>()
+                {
+                    Data = sc.Id
+                };
             }
         }
     }

@@ -28,6 +28,7 @@ namespace Student.Microservice.Feature.StudentFeature.Query
                     c => c.CourseId,
                     (studCourse,course) => new EnrollCourseDto
                     {
+                        Id = course.CourseId,
                         CourseName = course.Name,
                         Author= course.Author,
                         Language = course.Language,

@@ -46,7 +46,7 @@ namespace AdminAndInstructor.Microservice.Controllers
         {
             logger.LogInformation("Task<ActionResult<ServiceResponse<object>>> Post");
             var role = (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value);
-            if (role != "Admin")
+            if (role != "Admin" && role != "Instructor")
                 return Unauthorized("You are not allowed to perform operation");
             var response = await courseRepo.AddCourse(addCourseDto);
             if (response.Success)
@@ -62,12 +62,19 @@ namespace AdminAndInstructor.Microservice.Controllers
         {
             logger.LogInformation("Task<ActionResult<ServiceResponse<object>>> Put");
             var role = (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value);
-            if (role != "Admin")
+            if (role != "Admin" && role != "Instructor")
+            {
                 return Unauthorized("You are not allowed to perform operation");
+            }
             var response = await courseRepo.UpdateCourse(id, updateCourseDto);
             if (response.Success)
                 return Ok(response);
             return BadRequest(response);
+        }
+        [HttpGet("enrollStudents")]
+        public async Task<IActionResult> GetEnrollStudents()
+        {
+            return Ok(await courseRepo.GetEnrollStudents());
         }
 
         // DELETE api/<AdminController>/5

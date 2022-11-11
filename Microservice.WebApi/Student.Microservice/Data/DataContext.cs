@@ -19,6 +19,8 @@ namespace Student.Microservice.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Course>().Property(e => e.CreatedDate).
+               HasDefaultValueSql("getdate()");
         }
     }
 }

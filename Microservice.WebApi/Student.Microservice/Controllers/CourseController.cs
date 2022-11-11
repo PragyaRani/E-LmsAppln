@@ -36,12 +36,6 @@ namespace Student.Microservice.Controllers
             return Ok(await Mediator.Send(new GetEnrollCoursebyStudent { Id = id }));
         }
 
-        // POST api/<CourseController>
-        //[HttpPost]
-        //public void Post([FromBody] string value)
-        //{
-        //}
-
         // PUT api/<CourseController>/5
         [HttpPut("enroll/{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] EnrollCourseToStudentCommand enrollCourseCommand)

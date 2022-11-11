@@ -18,9 +18,12 @@ namespace AdminAndInstructor.Microservice.Repository
         public Task<ServiceResponse<dynamic>> AddCourse(AddCourseDto[] courseDto);
         public Task<ServiceResponse<dynamic>> UpdateCourse(int id,UpdateCourseDto courseDto);
         public Task<object> GetCoursebyId(int id);
-
         public Task AddNotification(EnrollCourseModel enrollCourseModel);
         public Task<IList> GetNotification();
+
+        public Task<ServiceResponse<dynamic>> GetEnrollStudents();
+
+
     }
     public class CourseRepo : ICourseRepo
     {
@@ -29,10 +32,49 @@ namespace AdminAndInstructor.Microservice.Repository
         {
             dataContext = _dataContext;
         }
+        public async Task<ServiceResponse<dynamic>> GetEnrollStudents()
+        {
+            try
+            {
+                var enrollStudents = await dataContext.StudentCourse.Join(dataContext.Students, sc => sc.EStudent.StudentId,
+                stu => stu.StudentId, (sc, stu) => new { sc, stu }).
+                Join(dataContext.Course, stuc => stuc.sc.Course.CourseId, crs => crs.CourseId, (stuc, crs) => new
+                {
+                    name = stuc.stu.Name,
+                    email = stuc.stu.Email,
+                    courseName = crs.Name,
+                    author = crs.Author
+                }).ToListAsync();
+                if (enrollStudents == null)
+                {
+                    return new ServiceResponse<dynamic>
+                    {
+                        Message = "No Students have been enrolled yet"
+                    };
+                }
+                return new ServiceResponse<dynamic>
+                {
+                    Data = enrollStudents
+                };
+            }
+            catch(Exception ex)
+            {
+                return new ServiceResponse<dynamic>
+                {
+                    Message = ex.Message
+                };
+            }
+        }
         public async Task<object> GetCoursebyId(int id)
         {
-            return await dataContext.Course.Include(c => c.Categories).Include(c => c.Contents).
-                Where(c => c.CourseId == id).FirstOrDefaultAsync();
+            try 
+            {
+                return await dataContext.Course.Include(c => c.Categories).Include(c => c.Contents).Include(t => t.Topics).
+               Where(c => c.CourseId == id).FirstOrDefaultAsync();
+            } catch(Exception ex)
+            {
+                return null;
+            }
         }
         public async Task<ServiceResponse<dynamic>> AddCourse(AddCourseDto[] courseDto)
         {
@@ -75,19 +117,6 @@ namespace AdminAndInstructor.Microservice.Repository
                     Contents = contentInfo,
                     Topics = topicInfo,
                 });
-                //course.Categories = new Category()
-                //{
-                //    CategoryName = element.Category,
-                //    SubCategory = element.SubCategory,
-                //    Topics = new Topic()
-                //    {
-                //        TopicName = element.TopicName,
-                //    }
-                //};
-                //course.Contents = new Content()
-                //{
-                //    ContentName = element.Content,
-                //};
             }
 
             await dataContext.BulkInsertAsync(course);
@@ -97,16 +126,18 @@ namespace AdminAndInstructor.Microservice.Repository
 
         public async Task<ServiceResponse<dynamic>> UpdateCourse(int id,UpdateCourseDto updateCourseDto)
         {
-            ApiCommonLibrary.DTO.Course course =await dataContext.Course.FirstOrDefaultAsync(c => c.CourseId == id);
-            if (course == null)
+            try 
             {
-                return new ServiceResponse<dynamic>
+                Course course = await dataContext.Course.FirstOrDefaultAsync(c => c.CourseId == id);
+                if (course == null)
                 {
-                    Success = false,
-                    Message = "Course not exist"
-                };
+                    return new ServiceResponse<dynamic>
+                    {
+                        Success = false,
+                        Message = "Course not exist"
+                    };
 
-            }
+                }
                 course.Name = updateCourseDto.CourseName;
                 course.Tag = updateCourseDto.Tag;
                 course.Categories = new ApiCommonLibrary.DTO.Category
@@ -120,19 +151,45 @@ namespace AdminAndInstructor.Microservice.Repository
                 await dataContext.SaveChangesAsync();
                 return new ServiceResponse<dynamic>()
                 {
-                    Message ="Course has been updated successfully"
+                    Message = "Course has been updated successfully"
                 };
+            } catch(Exception ex){
+                return new ServiceResponse<dynamic>()
+                {
+                    Success = false,
+                    Message = "Something Wrong with Server"
+                };
+            }
+            
         }
 
         public async Task AddNotification(EnrollCourseModel enrollCourseModel)
         {
-           dataContext.Notification.Add(new Notification
-            { Name = $"{enrollCourseModel.Student} enrolled for course {enrollCourseModel.Course}" });
-           await dataContext.SaveChangesAsync();
+            try
+            {
+                dataContext.Notification.Add(new Notification
+                { Name = $"{enrollCourseModel.Student} enrolled for course {enrollCourseModel.Course}" });
+                await dataContext.SaveChangesAsync();
+            } catch(Exception ex)
+            {
+                new ServiceResponse<dynamic>()
+                {
+                    Success = false,
+                    Message = "Something Wrong with Server"
+                };
+            }
+          
         }
         public async Task<IList> GetNotification()
         {
-            return await dataContext.Notification.ToListAsync();
+            try
+            {
+                return await dataContext.Notification.OrderByDescending(n => n.EnrollDate).ToListAsync();
+            }
+            catch(Exception ex){
+                return null;
+            }
+           
         }
     }
 }

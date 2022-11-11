@@ -13,6 +13,19 @@
       "UpstreamHttpMethod": [ "POST" ]
     },
     {
+      "DownstreamPathTemplate": "/api/User/login",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44344
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1/elms/user/sign-in",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+
+    {
       "DownstreamPathTemplate": "/api/admin",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -40,23 +53,6 @@
       ],
       "UpstreamPathTemplate": "/api/v1/courseware/course/{id}",
       "UpstreamHttpMethod": [ "PUT" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
-      },
-      "RouteClaimsRequirement": "Admin"
-    },
-    {
-      "DownstreamPathTemplate": "/api/course",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 44340
-        }
-      ],
-      "UpstreamPathTemplate": "/api/v1/courseware/catalogue",
-      "UpstreamHttpMethod": [ "GET" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
@@ -91,6 +87,36 @@
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
+      "DownstreamPathTemplate": "/api/admin/enrollStudents",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44391
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1/elms/enrollStudents",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/course",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44340
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1/courseware/catalogue",
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+
+
+    {
       "DownstreamPathTemplate": "/api/course/enroll/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -106,18 +132,21 @@
         "AllowedScopes": []
       }
     },
-
     {
-      "DownstreamPathTemplate": "/api/User/login",
+      "DownstreamPathTemplate": "/api/course/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44344
+          "Port": 44340
         }
       ],
-      "UpstreamPathTemplate": "/api/v1/elms/user/sign-in",
-      "UpstreamHttpMethod": [ "POST" ]
+      "UpstreamPathTemplate": "/api/v1/enrolment/student/{id}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     }
   ]
 }

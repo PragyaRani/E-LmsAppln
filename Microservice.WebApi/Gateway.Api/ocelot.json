@@ -52,7 +52,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/v1/courseware/course/{id}",
-      "UpstreamHttpMethod": [ "PUT" ],
+      "UpstreamHttpMethod": [ "PUT", "PATCH" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []

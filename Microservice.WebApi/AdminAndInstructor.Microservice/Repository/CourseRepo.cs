@@ -69,8 +69,10 @@ namespace AdminAndInstructor.Microservice.Repository
         {
             try 
             {
-                return await dataContext.Course.Include(c => c.Categories).Include(c => c.Contents).Include(t => t.Topics).
-               Where(c => c.CourseId == id).FirstOrDefaultAsync();
+                Course data = await dataContext.Course.Where(c => c.CourseId == id).Include(c => c.Categories).
+                             Include(c=> c.Contents).Include(c => c.Topics).
+                             FirstOrDefaultAsync();
+                return data;
             } catch(Exception ex)
             {
                 return null;
@@ -140,7 +142,7 @@ namespace AdminAndInstructor.Microservice.Repository
                 }
                 course.Name = updateCourseDto.CourseName;
                 course.Tag = updateCourseDto.Tag;
-                course.Categories = new ApiCommonLibrary.DTO.Category
+                course.Categories = new Category
                 {
                     CategoryName = updateCourseDto.Category,
                     SubCategory = updateCourseDto.SubCategory

@@ -57,10 +57,10 @@ namespace AdminAndInstructor.Microservice.Controllers
 
         // PUT api/<AdminController>/5
        
-        [HttpPut("{id}")]
-        public async Task<ActionResult<ServiceResponse<object>>> Put(int id, [FromBody] UpdateCourseDto updateCourseDto)
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<ServiceResponse<object>>> Ptach(int id, [FromBody] UpdateCourseDto updateCourseDto)
         {
-            logger.LogInformation("Task<ActionResult<ServiceResponse<object>>> Put");
+            logger.LogInformation("Task<ActionResult<ServiceResponse<object>>> Patch");
             var role = (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value);
             if (role != "Admin" && role != "Instructor")
             {
